@@ -6,8 +6,8 @@
 
   [![Python](https://img.shields.io/badge/Python-3.10%2B-06b6d4?style=for-the-badge&logo=python&logoColor=white&labelColor=1e293b)](https://python.org)
   [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20Kali-8b5cf6?style=for-the-badge&logo=linux&logoColor=white&labelColor=1e293b)](https://kali.org)
-  [![License](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge&logo=opensourceinitiative&logoColor=white&labelColor=1e293b)](LICENSE)
-  [![Stars](https://img.shields.io/github/stars/issu321/algorithm-analyzer?color=f59e0b&style=for-the-badge&logo=github&labelColor=1e293b)](https://github.com/issu321)
+
+  [![Stars](https://img.shields.io/github/stars/issu321/Algorithm-Analysis?color=f59e0b&style=for-the-badge&logo=github&labelColor=1e293b)](https://github.com/issu321)
 
 </div>
 
