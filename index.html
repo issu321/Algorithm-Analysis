@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USSU Algorithm Analyzer v4.0 — Ultra Pro Max</title>
+    <meta name="description" content="USSU Algorithm Analyzer v4.0 - The most advanced terminal-based algorithm analysis suite. Graph Theory, Searching, Sorting, ADA, Speed Benchmarking.">
+    <meta name="author" content="Ussu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-slate: #1e293b;
+            --slate: #475569;
+            --charcoal: #374151;
+            --gray: #9ca3af;
+            --dim: #64748b;
+            --cyan: #06b6d4;
+            --bright-cyan: #22d3ee;
+            --neon-blue: #38bdf8;
+            --green: #10b981;
+            --bright-green: #34d399;
+            --yellow: #fbbf24;
+            --gold: #f59e0b;
+            --red: #ef4444;
+            --magenta: #a855f7;
+            --purple: #8b5cf6;
+            --white: #f8fafc;
+            --black: #0f172a;
+            --glass: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(6, 182, 212, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        ::selection {
+            background: var(--cyan);
+            color: var(--black);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--deep-slate);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--cyan);
+            border-radius: 4px;
+        }
+
+        /* ===== PARTICLE CANVAS ===== */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.6rem 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 0 4px 30px rgba(6, 182, 212, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--cyan);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .logo::before {
+            content: '◈';
+            color: var(--bright-cyan);
+            font-size: 1.6rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.3rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cyan);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .nav-links a:hover {
+            color: var(--cyan);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 0.5rem 1.2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-cta:hover {
+            background: var(--cyan);
+            color: var(--black);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 1000px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--bright-cyan);
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--cyan) 50%, var(--bright-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero h1 .version {
+            display: block;
+            font-size: 0.5em;
+            font-weight: 500;
+            color: var(--cyan);
+            -webkit-text-fill-color: var(--cyan);
+            margin-top: 0.5rem;
+            letter-spacing: 8px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            font-weight: 400;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--cyan);
+            display: block;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.3rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.8s both;
+        }
+
+        .btn {
+            padding: 1rem 2.2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--cyan);
+            color: var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(6, 182, 212, 0.1);
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            z-index: 2;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-right: 2px solid var(--cyan);
+            border-bottom: 2px solid var(--cyan);
+            transform: rotate(45deg);
+            opacity: 0.6;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== SECTION STYLES ===== */
+        .section {
+            position: relative;
+            z-index: 2;
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+
+        .section-desc {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .divider {
+            width: 80px;
+            height: 3px;
+            background: var(--cyan);
+            margin: 1.5rem auto;
+            box-shadow: 0 0 15px var(--cyan);
+        }
+
+        /* ===== FEATURE MATRIX ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .feature-card:hover {
+            border-color: rgba(6, 182, 212, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--bright-cyan);
+            margin-bottom: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            border-radius: 3px;
+        }
+
+        /* ===== ALGORITHM SHOWCASE ===== */
+        .algo-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .algo-category {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .algo-header {
+            background: rgba(6, 182, 212, 0.08);
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .algo-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--cyan);
+            letter-spacing: 1px;
+        }
+
+        .algo-list {
+            padding: 1rem 1.5rem;
+        }
+
+        .algo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(55, 65, 81, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .algo-item:last-child {
+            border-bottom: none;
+        }
+
+        .algo-item:hover {
+            padding-left: 0.5rem;
+            color: var(--bright-cyan);
+        }
+
+        .algo-name {
+            font-weight: 600;
+            color: var(--white);
+            font-size: 0.95rem;
+        }
+
+        .algo-complexity {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--yellow);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        /* ===== COLOR PHILOSOPHY ===== */
+        .color-section {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 3rem;
+            margin-top: 2rem;
+        }
+
+        .color-bars {
+            display: flex;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .color-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--white);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .color-bar:hover {
+            flex-grow: 1.2;
+        }
+
+        .color-bar-1 {
+            flex: 5;
+            background: var(--deep-slate);
+        }
+
+        .color-bar-2 {
+            flex: 3;
+            background: var(--charcoal);
+        }
+
+        .color-bar-3 {
+            flex: 2;
+            background: var(--cyan);
+            color: var(--black);
+        }
+
+        .color-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .color-info-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(55, 65, 81, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .color-info-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-info-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* ===== TERMINAL DEMO ===== */
+        .terminal-window {
+            background: #0a0f1c;
+            border: 1px solid var(--charcoal);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .terminal-header {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid var(--charcoal);
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-btn.red { background: var(--red); }
+        .terminal-btn.yellow { background: var(--yellow); }
+        .terminal-btn.green { background: var(--green); }
+
+        .terminal-title {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--dim);
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            min-height: 300px;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.3rem;
+            opacity: 0;
+            animation: typeIn 0.1s ease forwards;
+        }
+
+        .term-prompt {
+            color: var(--cyan);
+        }
+
+        .term-command {
+            color: var(--white);
+        }
+
+        .term-output {
+            color: var(--gray);
+        }
+
+        .term-success {
+            color: var(--green);
+        }
+
+        .term-accent {
+            color: var(--bright-cyan);
+        }
+
+        .term-highlight {
+            color: var(--yellow);
+        }
+
+        @keyframes typeIn {
+            to { opacity: 1; }
+        }
+
+        /* ===== INTERACTIVE COMPLEXITY ===== */
+        .complexity-visualizer {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .complexity-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--charcoal);
+            position: relative;
+        }
+
+        .complexity-bar {
+            width: 60px;
+            background: linear-gradient(to top, var(--cyan), var(--bright-cyan));
+            border-radius: 4px 4px 0 0;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .complexity-bar:hover {
+            filter: brightness(1.3);
+            transform: scaleX(1.1);
+        }
+
+        .complexity-bar-label {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .complexity-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--cyan);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .complexity-bar:hover .complexity-bar-value {
+            opacity: 1;
+        }
+
+        .complexity-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .complexity-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--charcoal);
+            color: var(--gray);
+            padding: 0.6rem 1.2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .complexity-btn:hover, .complexity-btn.active {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        /* ===== STATS STRIP ===== */
+        .stats-strip {
+            background: linear-gradient(90deg, rgba(30, 41, 59, 0.9), rgba(55, 65, 81, 0.6), rgba(30, 41, 59, 0.9));
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-strip-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .strip-stat h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--cyan);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+
+        .strip-stat p {
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.85rem;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid var(--glass-border);
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyan);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--white);
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--charcoal);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--dim);
+            font-size: 0.85rem;
+        }
+
+        .footer-bottom a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .algo-showcase {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 4rem 1rem;
+            }
+
+            .color-section {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ===== ANIMATIONS ON SCROLL ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== GLOW EFFECTS ===== */
+        .glow-text {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .glow-box {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.1), inset 0 0 20px rgba(6, 182, 212, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PARTICLE CANVAS -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#features" class="logo">USSU</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#algorithms">Algorithms</a></li>
+                <li><a href="#complexity">Complexity</a></li>
+                <li><a href="#demo">Demo</a></li>
+            </ul>
+            <a href="https://github.com/issu321" target="_blank" class="nav-cta">GitHub ↗</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                <span>Python 3.13 Ready · Kali Linux · Windows 11</span>
+            </div>
+            <h1>
+                USSU ALGORITHM<br>ANALYZER
+                <span class="version">V4.0 ULTRA PRO MAX</span>
+            </h1>
+            <p class="hero-subtitle">
+                The most advanced terminal-based algorithm analysis suite ever built. 
+                Graph Theory · Searching · Sorting · ADA · Speed Benchmarking · Futuristic UI
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-algos">18+</span>
+                    <span class="stat-label">Algorithms</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-cats">7</span>
+                    <span class="stat-label">Categories</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-lang">1</span>
+                    <span class="stat-label">Language</span>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="https://github.com/issu321/Algorithm-Analysis" target="_blank" class="btn btn-primary">
+                    ◈ View on GitHub
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    Explore Features
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- STATS STRIP -->
+    <div class="stats-strip">
+        <div class="stats-strip-inner">
+            <div class="strip-stat">
+                <h4 class="counter" data-target="18">0</h4>
+                <p>Core Algorithms</p>
+            </div>
+            <div class="strip-stat">
+                <h4 class="counter" data-target="8">0</h4>
+                <p>Search Methods</p>
+            </div>
+            <div class="strip-stat">
+                <h4 class="counter" data-target="11">0</h4>
+                <p>Sort Variants</p>
+            </div>
+            <div class="strip-stat">
+                <h4 class="counter" data-target="5">0</h4>
+                <p>Graph Algos</p>
+            </div>
+            <div class="strip-stat">
+                <h4 class="counter" data-target="8">0</h4>
+                <p>Math Tools</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <section class="section" id="features">
+        <div class="section-header reveal">
+            <span class="section-tag">// Feature Matrix</span>
+            <h2 class="section-title">Complete Algorithm Suite</h2>
+            <div class="divider"></div>
+            <p class="section-desc">
+                Every algorithm is instrumented with complexity tracking, speed profiling, 
+                and operation counters. Not just theory — metrics-driven analysis.
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <span class="feature-icon">🌐</span>
+                <h3>Graph Traversal</h3>
+                <p>Breadth First Search and Depth First Search with full path reconstruction, 
+                level tracking, and parent mapping for shortest unweighted paths.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">BFS</span>
+                    <span class="feature-tag">DFS</span>
+                    <span class="feature-tag">O(V+E)</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">📍</span>
+                <h3>Shortest Path</h3>
+                <p>Dijkstra's min-heap algorithm, Bellman-Ford for negative weights, 
+                and Floyd-Warshall all-pairs shortest path with full matrix output.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Dijkstra</span>
+                    <span class="feature-tag">Bellman-Ford</span>
+                    <span class="feature-tag">Floyd-Warshall</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">🌳</span>
+                <h3>Minimum Spanning Tree</h3>
+                <p>Prim's priority queue approach and Kruskal's Union-Find implementation 
+                with cycle detection and total weight optimization.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Prim's</span>
+                    <span class="feature-tag">Kruskal's</span>
+                    <span class="feature-tag">Union-Find</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">🔍</span>
+                <h3>Searching Suite</h3>
+                <p>8 complete search algorithms from Linear O(n) to Interpolation O(log log n). 
+                Each tracks comparisons, accesses, and execution time.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Binary</span>
+                    <span class="feature-tag">Jump</span>
+                    <span class="feature-tag">Fibonacci</span>
+                    <span class="feature-tag">Ternary</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">📊</span>
+                <h3>Sorting Engine</h3>
+                <p>11 sorting algorithms including Bubble, Merge, Quick, Heap, Shell, 
+                Cocktail, Comb, Counting, and Radix with stability indicators.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Merge</span>
+                    <span class="feature-tag">Quick</span>
+                    <span class="feature-tag">Heap</span>
+                    <span class="feature-tag">Radix</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">🧮</span>
+                <h3>Math Calculator</h3>
+                <p>Advanced mathematical tools: Factorial, Fibonacci (3 methods), GCD, 
+                Fast Exponentiation, Primality Test, Sieve, and Matrix Multiply.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">GCD</span>
+                    <span class="feature-tag">Sieve</span>
+                    <span class="feature-tag">Matrix</span>
+                    <span class="feature-tag">Big-O</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">⚡</span>
+                <h3>Speed Benchmarking</h3>
+                <p>Cross-size performance suites with warmup runs, averaging, 
+                and automatic skipping of O(n²) algorithms on large inputs.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">tracemalloc</span>
+                    <span class="feature-tag">perf_counter</span>
+                    <span class="feature-tag">Profiling</span>
+                </div>
+            </div>
+            <div class="feature-card reveal">
+                <span class="feature-icon">🎨</span>
+                <h3>Graph Visualization</h3>
+                <p>Matplotlib + NetworkX integration for publication-quality graph plots 
+                with cyberpunk color theming and automatic PNG export.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">matplotlib</span>
+                    <span class="feature-tag">networkx</span>
+                    <span class="feature-tag">PNG Export</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ALGORITHMS SECTION -->
+    <section class="section" id="algorithms">
+        <div class="section-header reveal">
+            <span class="section-tag">// Algorithm Index</span>
+            <h2 class="section-title">Every Algorithm. Every Complexity.</h2>
+            <div class="divider"></div>
+            <p class="section-desc">
+                Complete index of all implemented algorithms with their time and space complexities.
+            </p>
+        </div>
+        <div class="algo-showcase">
+            <div class="algo-category reveal">
+                <div class="algo-header">
+                    <span style="font-size: 1.5rem;">🔍</span>
+                    <h3>Searching</h3>
+                </div>
+                <div class="algo-list">
+                    <div class="algo-item"><span class="algo-name">Linear Search</span><span class="algo-complexity">O(n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Binary Search (Iterative)</span><span class="algo-complexity">O(log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Binary Search (Recursive)</span><span class="algo-complexity">O(log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Jump Search</span><span class="algo-complexity">O(√n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Interpolation Search</span><span class="algo-complexity">O(log log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Exponential Search</span><span class="algo-complexity">O(log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Ternary Search</span><span class="algo-complexity">O(log₃ n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Fibonacci Search</span><span class="algo-complexity">O(log n)</span></div>
+                </div>
+            </div>
+            <div class="algo-category reveal">
+                <div class="algo-header">
+                    <span style="font-size: 1.5rem;">📊</span>
+                    <h3>Sorting</h3>
+                </div>
+                <div class="algo-list">
+                    <div class="algo-item"><span class="algo-name">Bubble Sort</span><span class="algo-complexity">O(n²)</span></div>
+                    <div class="algo-item"><span class="algo-name">Selection Sort</span><span class="algo-complexity">O(n²)</span></div>
+                    <div class="algo-item"><span class="algo-name">Insertion Sort</span><span class="algo-complexity">O(n²)</span></div>
+                    <div class="algo-item"><span class="algo-name">Merge Sort</span><span class="algo-complexity">O(n log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Quick Sort</span><span class="algo-complexity">O(n log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Heap Sort</span><span class="algo-complexity">O(n log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Shell Sort</span><span class="algo-complexity">O(n log² n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Cocktail Shaker</span><span class="algo-complexity">O(n²)</span></div>
+                    <div class="algo-item"><span class="algo-name">Comb Sort</span><span class="algo-complexity">O(n²/2^p)</span></div>
+                    <div class="algo-item"><span class="algo-name">Counting Sort</span><span class="algo-complexity">O(n+k)</span></div>
+                    <div class="algo-item"><span class="algo-name">Radix Sort</span><span class="algo-complexity">O(d(n+k))</span></div>
+                </div>
+            </div>
+            <div class="algo-category reveal">
+                <div class="algo-header">
+                    <span style="font-size: 1.5rem;">🌐</span>
+                    <h3>Graph Theory</h3>
+                </div>
+                <div class="algo-list">
+                    <div class="algo-item"><span class="algo-name">BFS Traversal</span><span class="algo-complexity">O(V+E)</span></div>
+                    <div class="algo-item"><span class="algo-name">DFS Traversal</span><span class="algo-complexity">O(V+E)</span></div>
+                    <div class="algo-item"><span class="algo-name">Dijkstra Shortest Path</span><span class="algo-complexity">O((V+E) log V)</span></div>
+                    <div class="algo-item"><span class="algo-name">Bellman-Ford</span><span class="algo-complexity">O(V×E)</span></div>
+                    <div class="algo-item"><span class="algo-name">Floyd-Warshall</span><span class="algo-complexity">O(V³)</span></div>
+                    <div class="algo-item"><span class="algo-name">Longest Path (DAG)</span><span class="algo-complexity">O(V+E)</span></div>
+                    <div class="algo-item"><span class="algo-name">Prim's MST</span><span class="algo-complexity">O((V+E) log V)</span></div>
+                    <div class="algo-item"><span class="algo-name">Kruskal's MST</span><span class="algo-complexity">O(E log E)</span></div>
+                </div>
+            </div>
+            <div class="algo-category reveal">
+                <div class="algo-header">
+                    <span style="font-size: 1.5rem;">🧮</span>
+                    <h3>Mathematics</h3>
+                </div>
+                <div class="algo-list">
+                    <div class="algo-item"><span class="algo-name">Factorial</span><span class="algo-complexity">O(n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Fibonacci (Iterative)</span><span class="algo-complexity">O(n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Fibonacci (Memoization)</span><span class="algo-complexity">O(n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Fibonacci (Recursive)</span><span class="algo-complexity">O(2ⁿ)</span></div>
+                    <div class="algo-item"><span class="algo-name">Euclidean GCD</span><span class="algo-complexity">O(log min(a,b))</span></div>
+                    <div class="algo-item"><span class="algo-name">Fast Exponentiation</span><span class="algo-complexity">O(log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Primality Test</span><span class="algo-complexity">O(√n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Sieve of Eratosthenes</span><span class="algo-complexity">O(n log log n)</span></div>
+                    <div class="algo-item"><span class="algo-name">Matrix Multiply</span><span class="algo-complexity">O(n³)</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPLEXITY VISUALIZER -->
+    <section class="section" id="complexity">
+        <div class="section-header reveal">
+            <span class="section-tag">// Interactive</span>
+            <h2 class="section-title">Big-O Complexity Visualizer</h2>
+            <div class="divider"></div>
+            <p class="section-desc">
+                Click the buttons below to visualize how different time complexities scale with input size n.
+            </p>
+        </div>
+        <div class="complexity-visualizer reveal">
+            <div class="complexity-chart" id="complexityChart">
+                <!-- Bars generated by JS -->
+            </div>
+            <div class="complexity-controls">
+                <button class="complexity-btn active" onclick="updateComplexity('small')">n = 10</button>
+                <button class="complexity-btn" onclick="updateComplexity('medium')">n = 50</button>
+                <button class="complexity-btn" onclick="updateComplexity('large')">n = 100</button>
+                <button class="complexity-btn" onclick="updateComplexity('huge')">n = 500</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- TERMINAL DEMO -->
+    <section class="section" id="demo">
+        <div class="section-header reveal">
+            <span class="section-tag">// Live Preview</span>
+            <h2 class="section-title">Terminal Experience</h2>
+            <div class="divider"></div>
+            <p class="section-desc">
+                The actual interface you get when running USSU Algorithm Analyzer v4.0 in your terminal.
+            </p>
+        </div>
+        <div class="terminal-window reveal">
+            <div class="terminal-header">
+                <div class="terminal-btn red"></div>
+                <div class="terminal-btn yellow"></div>
+                <div class="terminal-btn green"></div>
+                <span class="terminal-title">ussu@kali:~/algorithm-analyzer</span>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+                <div class="terminal-line"><span class="term-prompt">ussu@kali:~$</span> <span class="term-command">python3 app.py</span></div>
+                <div class="terminal-line term-output">Loading USSU Algorithm Analyzer v4.0...</div>
+                <div class="terminal-line term-success">[+] System check complete. Python 3.13 detected.</div>
+                <div class="terminal-line term-success">[+] matplotlib: YES | networkx: YES | numpy: YES</div>
+                <div class="terminal-line term-accent">╔═══════════════════════════════════════════════════════════════╗</div>
+                <div class="terminal-line term-accent">║     USSU'S ULTRA PRO MAX ALGORITHM ANALYZER v4.0              ║</div>
+                <div class="terminal-line term-accent">║     Graph Theory | Search | Sort | ADA | Speed Benchmark      ║</div>
+                <div class="terminal-line term-accent">╚═══════════════════════════════════════════════════════════════╝</div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line term-highlight">[1] Graph Operations        - Create, load, display graphs</div>
+                <div class="terminal-line term-highlight">[2] BFS Traversal           - Breadth First Search</div>
+                <div class="terminal-line term-highlight">[3] DFS Traversal           - Depth First Search</div>
+                <div class="terminal-line term-highlight">[4] Shortest Path (Dijkstra)- Single source shortest path</div>
+                <div class="terminal-line term-highlight">[5] All Pairs Shortest Path - Floyd-Warshall algorithm</div>
+                <div class="terminal-line term-highlight">[6] Longest Path (DAG)      - Critical path analysis</div>
+                <div class="terminal-line term-highlight">[7] Minimum Spanning Tree   - Prim's & Kruskal's</div>
+                <div class="terminal-line term-highlight">[8] Bellman-Ford            - Negative weight handling</div>
+                <div class="terminal-line term-highlight">[9] Compare Graph Algos     - Performance comparison</div>
+                <div class="terminal-line term-highlight">[10] Searching Algorithms   - Linear, Binary, Jump, etc.</div>
+                <div class="terminal-line term-highlight">[11] Sorting Algorithms     - Bubble, Merge, Quick, etc.</div>
+                <div class="terminal-line term-highlight">[12] Math Calculator        - Advanced mathematical tools</div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line"><span class="term-prompt">[USSU v4.0]</span> <span class="term-command">Enter choice: 4</span></div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line term-accent">[DIJKSTRA - SHORTEST PATH]</div>
+                <div class="terminal-line term-output">Time: O((V + E) log V) | Space: O(V)</div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line term-success">Shortest Distances from 0:</div>
+                <div class="terminal-line term-success">  0 → 0: 0.00</div>
+                <div class="terminal-line term-success">  0 → 1: 4.00</div>
+                <div class="terminal-line term-success">  0 → 2: 1.00</div>
+                <div class="terminal-line term-success">  0 → 3: 2.00</div>
+                <div class="terminal-line term-success">  0 → 4: 3.00</div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line term-success">Path to 4: 0 → 2 → 3 → 4</div>
+                <div class="terminal-line term-success">Total Distance: 3.00</div>
+                <div class="terminal-line term-output"> </div>
+                <div class="terminal-line term-output">Execution Time: 0.052 ms | Memory: 12.4 KB</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>◈ USSU</h3>
+                <p>
+                    The most advanced terminal-based algorithm analysis suite ever built. 
+                    Designed for students, researchers, CTF players, and engineers who 
+                    refuse to use boring tools.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Project</h4>
+                <ul>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis" target="_blank">GitHub Repository</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#algorithms">Algorithms</a></li>
+                    <li><a href="#demo">Live Demo</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Documentation</h4>
+                <ul>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis/blob/main/README.md">Installation Guide</a></li>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis/blob/main/INPUTGUIDE.md">Input Guide</a></li>
+                    <li><a href="#">API Reference(Currently no Api's installed)</a></li>
+                    <li><a href="#">Changelog(Coming Soon)</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="https://github.com/issu321" target="_blank">GitHub(Mohammed Usman)</a></li>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis/issues" target="_blank">Report Issue</a></li>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis/pulls" target="_blank">Contribute</a></li>
+                    <li><a href="https://github.com/issu321/Algorithm-Analysis/branches" target="_blank">Branches</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <h4>💎 Designed & Developed by Ussu · ⚡<a href="https://github.com/issu321" target="_blank">Ussu</a> Algorithm Analysis· MIT License</h4>
+        </div>
+    </footer>
+
+    <script>
+        // ===== PARTICLE NETWORK CANVAS =====
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(6, 182, 212, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(6, 182, 212, ${0.15 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            animationId = requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        // ===== NAVBAR SCROLL EFFECT =====
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ===== SCROLL REVEAL =====
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ===== COUNTER ANIMATION =====
+        const counters = document.querySelectorAll('.counter');
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-target'));
+                    let current = 0;
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            entry.target.textContent = target;
+                            clearInterval(timer);
+                        } else {
+                            entry.target.textContent = Math.floor(current);
+                        }
+                    }, 30);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        counters.forEach(c => counterObserver.observe(c));
+
+        // ===== COMPLEXITY VISUALIZER =====
+        const complexities = {
+            'O(1)': { color: '#10b981', fn: (n) => 1 },
+            'O(log n)': { color: '#34d399', fn: (n) => Math.log2(n) * 5 },
+            'O(√n)': { color: '#fbbf24', fn: (n) => Math.sqrt(n) * 8 },
+            'O(n)': { color: '#f59e0b', fn: (n) => n * 0.5 },
+            'O(n log n)': { color: '#a855f7', fn: (n) => n * Math.log2(n) * 0.08 },
+            'O(n²)': { color: '#ef4444', fn: (n) => n * n * 0.008 },
+        };
+
+        let currentN = 10;
+
+        function renderComplexityChart() {
+            const chart = document.getElementById('complexityChart');
+            chart.innerHTML = '';
+
+            const maxVal = Math.max(...Object.values(complexities).map(c => c.fn(currentN)));
+
+            Object.entries(complexities).forEach(([name, data]) => {
+                const val = data.fn(currentN);
+                const height = (val / maxVal) * 200;
+
+                const bar = document.createElement('div');
+                bar.className = 'complexity-bar';
+                bar.style.height = '0px';
+                bar.style.background = `linear-gradient(to top, ${data.color}, ${data.color}88)`;
+
+                const label = document.createElement('div');
+                label.className = 'complexity-bar-label';
+                label.textContent = name;
+
+                const value = document.createElement('div');
+                value.className = 'complexity-bar-value';
+                value.textContent = Math.round(val).toLocaleString();
+
+                bar.appendChild(label);
+                bar.appendChild(value);
+                chart.appendChild(bar);
+
+                setTimeout(() => {
+                    bar.style.height = `${Math.max(height, 5)}px`;
+                }, 100);
+            });
+        }
+
+        function updateComplexity(size) {
+            document.querySelectorAll('.complexity-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const sizes = { small: 10, medium: 50, large: 100, huge: 500 };
+            currentN = sizes[size];
+            renderComplexityChart();
+        }
+
+        renderComplexityChart();
+
+        // ===== TERMINAL TYPEWRITER EFFECT =====
+        const terminalLines = document.querySelectorAll('.terminal-line');
+        terminalLines.forEach((line, index) => {
+            line.style.animationDelay = `${index * 0.08}s`;
+        });
+
+        // ===== SMOOTH SCROLL FOR NAV LINKS =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
